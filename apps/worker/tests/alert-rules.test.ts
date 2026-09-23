@@ -70,6 +70,14 @@ test("an expired certificate is critical", () => {
   assert.ok(rules(evaluateTls(expired, NOW)).includes("tls_expired"));
 });
 
+test("names what is wrong with a chain", () => {
+  const message = (chainError: string) =>
+    evaluateTls(cert({ chainValid: false, chainError }), NOW).find((d) => d.rule === "tls_chain_invalid")?.message ?? "";
+  assert.match(message("DEPTH_ZERO_SELF_SIGNED_CERT"), /self-signed/);
+  assert.match(message("UNABLE_TO_VERIFY_LEAF_SIGNATURE"), /intermediate/);
+  assert.match(message("CERT_REVOKED"), /CERT_REVOKED/);
+});
+
 test("reports a broken chain, a wrong hostname and a changed issuer", () => {
   const broken = evaluateTls(
     cert({ chainValid: false, hostnameMatches: false, previousIssuer: "DigiCert" }),

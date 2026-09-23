@@ -21,6 +21,22 @@ export interface TlsObservation {
   readonly hostnameMatches: boolean;
   readonly issuer: string;
   readonly previousIssuer?: string | null;
+  /** Node's verification code, when the chain did not validate. */
+  readonly chainError?: string | null;
+}
+
+function chainMessage(code: string | null | undefined): string {
+  switch (code) {
+    case "DEPTH_ZERO_SELF_SIGNED_CERT":
+    case "SELF_SIGNED_CERT_IN_CHAIN":
+      return "The certificate is self-signed. Browsers will show a security warning.";
+    case "UNABLE_TO_VERIFY_LEAF_SIGNATURE":
+    case "UNABLE_TO_GET_ISSUER_CERT":
+    case "UNABLE_TO_GET_ISSUER_CERT_LOCALLY":
+      return "The certificate chain is incomplete: the server is not sending its intermediate certificate. Some browsers and most apps will refuse the connection.";
+    default:
+      return `The certificate chain does not validate${code ? ` (${code})` : ""}.`;
+  }
 }
 
 export interface AlertDecision {
@@ -66,7 +82,7 @@ export function evaluateTls(observation: TlsObservation, now: Date = new Date())
     decisions.push({
       rule: "tls_chain_invalid",
       severity: "critical",
-      message: "The certificate chain does not validate. An intermediate is probably missing.",
+      message: chainMessage(observation.chainError),
     });
   }
 

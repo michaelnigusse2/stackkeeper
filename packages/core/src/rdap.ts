@@ -149,8 +149,11 @@ export const EXTRA_RDAP_SERVERS: Readonly<Record<string, string>> = {
   me: "https://rdap.identitydigital.services/rdap/",
 };
 
-/** Registries that publish no expiry date, so one must be entered by hand. */
-export const NO_PUBLISHED_EXPIRY = new Set(["de", "nl", "ch", "li", "eu"]);
+/**
+ * Registries that publish no expiry date, so one must be entered by hand.
+ * .et has no public RDAP or WHOIS server at all.
+ */
+export const NO_PUBLISHED_EXPIRY = new Set(["de", "nl", "ch", "li", "eu", "et"]);
 
 export function publishesExpiry(tld: string): boolean {
   return !NO_PUBLISHED_EXPIRY.has(tld.toLowerCase());

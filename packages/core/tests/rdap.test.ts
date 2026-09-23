@@ -125,6 +125,7 @@ test("builds the query URL for a domain", () => {
 test("knows which registries publish no expiry date", () => {
   assert.ok(!publishesExpiry("de"));
   assert.ok(!publishesExpiry("nl"));
+  assert.ok(!publishesExpiry("et"));
   assert.ok(publishesExpiry("com"));
   assert.ok(publishesExpiry("co.uk".split(".").pop()!));
 });

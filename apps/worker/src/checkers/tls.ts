@@ -37,6 +37,21 @@ export interface TlsCheckResult {
 
 const HANDSHAKE_TIMEOUT_MS = 10_000;
 
+/**
+ * Codes Node reports through `authorizationError` that are not chain faults.
+ * Node runs the hostname check even with rejectUnauthorized off and reports a
+ * mismatch the same way as a broken chain; an expired leaf is reported as
+ * CERT_HAS_EXPIRED. Both have their own rules, so neither counts against the
+ * chain. Found by the first live run: wrong.host.badssl.com, whose chain is
+ * fine, was reported as "an intermediate is probably missing".
+ */
+const NOT_CHAIN_FAULTS = new Set(["ERR_TLS_CERT_ALTNAME_INVALID", "CERT_HAS_EXPIRED"]);
+
+/** True when Node's verification code means the chain itself is at fault. */
+export function isChainFault(code: string | null): boolean {
+  return code !== null && !NOT_CHAIN_FAULTS.has(code);
+}
+
 export async function checkTls(host: string, port = 443): Promise<TlsCheckResult> {
   let target;
   try {
@@ -92,14 +107,13 @@ function handshake(address: string, servername: string, port: number): Promise<T
     socket.once("secureConnect", () => {
       const peer = socket.getPeerCertificate(false);
       const summary = summariseCertificate(peer as never);
-      const authorized = socket.authorized;
-      const authorizationError = socket.authorizationError;
+      const code = socket.authorized ? null : String(socket.authorizationError ?? "unknown");
 
       const observation: TlsObservation = {
         address,
         certificate: summary,
-        chainValid: authorized,
-        chainError: authorized ? null : String(authorizationError ?? "unknown"),
+        chainValid: !isChainFault(code),
+        chainError: code,
         hostnameMatches: certificateCoversHost(summary, servername),
         protocol: socket.getProtocol(),
         latencyMs: Date.now() - started,
@@ -144,8 +158,10 @@ export function summariseTlsCheck(result: TlsCheckResult, now: Date = new Date()
   );
   const inconsistent = fingerprints.size > 1;
 
-  let status: "ok" | "warning" | "critical" | "error" = "ok";
-  if (result.errors.length > 0) status = "error";
+  // Some addresses answered and some did not (bbc.co.uk in the first live run:
+  // one of four timed out). The certificate was still read, so this is a
+  // warning to look at, not an outage.
+  let status: "ok" | "warning" | "critical" | "error" = result.errors.length > 0 ? "warning" : "ok";
   if (primary) {
     const remaining = daysUntilExpiry(primary.certificate, now);
     const used = lifetimeElapsed(primary.certificate, now) ?? 0;

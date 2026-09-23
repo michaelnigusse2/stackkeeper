@@ -19,13 +19,13 @@ This file is the honest split. Read it before trusting anything below.
 | That query check is not vacuous | A column name was misspelled on purpose | Caught |
 | `packages/core` | `node --test` | 160 tests pass |
 | `packages/db` encryption | `node --test` | 15 tests pass |
-| `apps/worker` logic | `node --test` | 54 tests pass |
+| `apps/worker` logic | `node --test` | 59 tests pass |
 | `packages/core` types | `tsc --noEmit` | Clean |
 | Every package's types, including `apps/web` | `tsc --noEmit` against the installed packages, 23 Sep 2026 | Clean |
 | Cross-package imports | `scripts/check-imports.py` | 181 symbols, all exported |
 | Erasable syntax | Every `.ts` loaded through Node's type stripper | All strippable |
 
-What the 229 unit tests actually cover, beyond arithmetic: RDAP and WHOIS
+What the 234 unit tests actually cover, beyond arithmetic: RDAP and WHOIS
 parsing against real response shapes, registrable-domain resolution including
 multi-level suffixes and punycode, wildcard certificate matching, the
 lifetime-based alert thresholds, the registry auto-renew trap, the private
@@ -243,3 +243,9 @@ column is rejected by `PREPARE`.
 - **Renewal reminders.** The two new queries, the no-reopen rule and the
   stale-close rule were run against Postgres 16. The worker job itself has
   not run end to end.
+- **First live monitoring run** (`check:live`, 23 Sep, from Ethiopia). It found
+  four bugs the unit tests could not, all fixed: a hostname mismatch was
+  reported as a broken chain; every chain fault said "an intermediate is
+  probably missing", including self-signed and expired certificates; one of
+  four addresses timing out marked a healthy site as an error; and .de, .nl
+  and .et domains sat at "ok" with no expiry date and nothing asking for one.

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { summariseCertificate } from "@stackkeeper/core";
 import { buildDomainOutcome, buildTlsOutcome } from "../src/pipeline.ts";
-import type { TlsCheckResult } from "../src/checkers/tls.ts";
+import { isChainFault, type TlsCheckResult } from "../src/checkers/tls.ts";
 import type { DomainCheckResult } from "../src/checkers/domain.ts";
 
 const NOW = new Date("2026-09-21T12:00:00Z");
@@ -182,6 +182,42 @@ test("a manual date is used where the registry publishes none", () => {
   assert.ok(outcome.alerts.some((a) => a.rule.startsWith("domain_expiry_")));
   // And it does not nag for a date it already has.
   assert.ok(!outcome.alerts.some((a) => a.rule === "domain_expiry_unknown"));
+});
+
+test("asks for a date where the registry publishes none and none was entered", () => {
+  const de = domainResult({
+    domain: "example.de",
+    expiryUnavailable: true,
+    record: { ...domainResult().record!, expiresAt: null, statuses: [] },
+  });
+  const outcome = buildDomainOutcome(de, null, null, NOW);
+  assert.ok(outcome.alerts.some((a) => a.rule === "domain_expiry_unknown"));
+});
+
+test("a registry with no lookup server is not an error when a date is entered", () => {
+  const et = domainResult({
+    domain: "ethiotelecom.et",
+    source: "none",
+    record: null,
+    expiryUnavailable: true,
+    error: "No registry would answer for .et",
+  });
+  const outcome = buildDomainOutcome(et, null, new Date("2027-03-01T00:00:00Z"), NOW);
+  assert.equal(outcome.status, "ok");
+  assert.equal(outcome.payload.source, "manual");
+});
+
+test("a hostname mismatch or an expired leaf is not reported as a broken chain", () => {
+  assert.equal(isChainFault(null), false);
+  assert.equal(isChainFault("ERR_TLS_CERT_ALTNAME_INVALID"), false);
+  assert.equal(isChainFault("CERT_HAS_EXPIRED"), false);
+  assert.equal(isChainFault("DEPTH_ZERO_SELF_SIGNED_CERT"), true);
+  assert.equal(isChainFault("UNABLE_TO_VERIFY_LEAF_SIGNATURE"), true);
+});
+
+test("one address timing out while another answers is a warning, not an error", () => {
+  const outcome = buildTlsOutcome(tlsResult({ errors: ["151.101.0.81: handshake timed out"] }), null, NOW);
+  assert.equal(outcome.status, "warning");
 });
 
 test("asks for a date when a registry that normally publishes one returns nothing", () => {

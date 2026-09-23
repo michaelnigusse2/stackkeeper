@@ -38,7 +38,7 @@ Early, but it does the job it was built for.
 | Monthly "what to invoice" CSV export | Working, tested |
 | Provider imports, handoff packs, team roles | Not started |
 
-229 unit tests, 15 tenant-isolation assertions against a real Postgres, 11
+234 unit tests, 15 tenant-isolation assertions against a real Postgres, 11
 deliberate breaks of the isolation model that the suite catches, and 73
 repository queries parsed against the live schema.
 

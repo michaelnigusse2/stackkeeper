@@ -91,6 +91,7 @@ export function buildTlsOutcome(
     notAfter: certificate.notAfter ?? now,
     chainValid: primary.chainValid,
     hostnameMatches: primary.hostnameMatches,
+    chainError: primary.chainError,
     issuer: certificate.issuer,
     previousIssuer: typeof previous?.issuer === "string" ? previous.issuer : null,
   };
@@ -158,7 +159,7 @@ export function buildDomainOutcome(
     checkedAt: now.toISOString(),
   };
 
-  if (result.error && !record) {
+  if (result.error && !record && !result.expiryUnavailable) {
     return {
       status: "error",
       payload,
@@ -174,9 +175,10 @@ export function buildDomainOutcome(
     statuses: record?.statuses ?? [],
     nameservers: record?.nameservers ?? [],
     previousNameservers: previousNameservers.length > 0 ? previousNameservers : null,
-    // A registry that publishes nothing is not nagged about; one that normally
-    // does, but returned nothing this time, is.
-    expiryIsManual: manualExpiry !== null || result.expiryUnavailable,
+    // Without a date nothing can be watched, so ask for one until it is entered,
+    // whether or not the registry ever publishes it. The first live run showed
+    // .de and .nl domains sitting at "ok" with no date and nobody prompted.
+    expiryIsManual: manualExpiry !== null,
   };
 
   const decisions = evaluateDomain(observation, now);

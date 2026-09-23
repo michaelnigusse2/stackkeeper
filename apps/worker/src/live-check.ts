@@ -87,7 +87,7 @@ async function checkOne(host: string, expect: string, limiter: HostRateLimiter):
     row.issuer = typeof outcome.payload.issuer === "string" ? outcome.payload.issuer : null;
     row.certExpires = day(outcome.payload.notAfter);
     const used = outcome.payload.lifetimeUsed;
-    row.lifetimeUsed = typeof used === "number" ? `${Math.round(used * 100)}%` : null;
+    row.lifetimeUsed = typeof used === "number" ? (used > 1 ? "expired" : `${Math.round(used * 100)}%`) : null;
     row.alerts.push(...outcome.alerts.map((a) => `[tls ${a.severity}] ${a.message}`));
     if (outcome.error) row.errors.push(`tls: ${outcome.error}`);
   } catch (error) {
@@ -118,7 +118,7 @@ async function main(): Promise<void> {
   for (const row of rows) {
     console.log(`${row.host}${row.expect ? `   (expected: ${row.expect})` : ""}`);
     console.log(`  registration  ${row.domainStatus.padEnd(8)} via ${row.source}, expires ${row.expires ?? "unknown"}${row.registrar ? `, ${row.registrar}` : ""}`);
-    console.log(`  certificate   ${row.tlsStatus.padEnd(8)} ${row.issuer ?? ""}${row.certExpires ? `, expires ${row.certExpires}` : ""}${row.lifetimeUsed ? ` (${row.lifetimeUsed} of its life used)` : ""}`);
+    console.log(`  certificate   ${row.tlsStatus.padEnd(8)} ${row.issuer ?? ""}${row.certExpires ? `, expires ${row.certExpires}` : ""}${row.lifetimeUsed ? ` (${row.lifetimeUsed === "expired" ? "expired" : `${row.lifetimeUsed} of its life used`})` : ""}`);
     for (const alert of row.alerts) console.log(`  ${alert}`);
     for (const error of row.errors) console.log(`  error: ${error}`);
     console.log("");
