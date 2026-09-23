@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { InvoiceLineInput } from "../src/invoice.ts";
-import { dueDayInMonth, invoiceCsv, invoiceSummary, parseMonth } from "../src/invoice.ts";
+import { dueDayInMonth, dueTotals, invoiceCsv, invoiceSummary, parseMonth } from "../src/invoice.ts";
 
 function line(over: Partial<InvoiceLineInput> = {}): InvoiceLineInput {
   return {
@@ -105,6 +105,22 @@ test("rows are grouped by client, due items first", () => {
 test("dueDayInMonth handles anchors in later years", () => {
   assert.equal(dueDayInMonth("2027-10-01", 12, parseMonth("2026-10")), "2026-10-01");
   assert.equal(dueDayInMonth("2027-10-01", 24, parseMonth("2026-10")), null);
+});
+
+test("totals add only what is due, per currency, without converting", () => {
+  const rows = invoiceSummary(
+    [
+      line({ lineId: "a", chargeAmount: 2500 }),
+      line({ lineId: "b", chargeAmount: 1050 }),
+      line({ lineId: "c", chargeAmount: 150000, chargeCurrency: "ETB" }),
+      line({ lineId: "d", chargeAmount: null, chargeCurrency: null, chargeCycle: null }),
+    ],
+    "2026-10",
+  );
+  assert.deepEqual(dueTotals(rows), [
+    { currency: "ETB", amount: "1500.00" },
+    { currency: "USD", amount: "35.50" },
+  ]);
 });
 
 test("CSV quotes, neutralises formulas and starts with a byte-order mark", () => {

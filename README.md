@@ -35,10 +35,10 @@ Early, but it does the job it was built for.
 | Shareable read-only client report links, with expiry and revoke | Working, tested |
 | Audit log and activity view | Working |
 | Two-factor sign-in (authenticator app, with QR code) | Working, not yet tried in a browser |
-| Monthly "what to invoice" CSV export | Working, tested |
+| Monthly "what to invoice" summary: CSV, and a printable page to save as PDF | Working, tested |
 | Provider imports, handoff packs, team roles | Not started |
 
-234 unit tests, 15 tenant-isolation assertions against a real Postgres, 11
+235 unit tests, 15 tenant-isolation assertions against a real Postgres, 11
 deliberate breaks of the isolation model that the suite catches, and 73
 repository queries parsed against the live schema.
 

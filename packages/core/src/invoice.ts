@@ -22,7 +22,7 @@
 
 import type { BillingCycle } from "./cycle.ts";
 import { cycleLabel, monthsPerCycle } from "./cycle.ts";
-import { formatAmount, money } from "./money.ts";
+import { add, formatAmount, money, parseAmount, zero } from "./money.ts";
 import { toDayString } from "./margin.ts";
 
 export interface InvoiceLineInput {
@@ -212,6 +212,19 @@ export function invoiceSummary(lines: readonly InvoiceLineInput[], month: string
   );
 }
 
+/** What is due, summed per currency: "USD 50.00", "ETB 1200.00". Never converted. */
+export function dueTotals(rows: readonly InvoiceRow[]): { currency: string; amount: string }[] {
+  const totals = new Map<string, ReturnType<typeof zero>>();
+  for (const row of rows) {
+    if (row.status !== "due") continue;
+    const current = totals.get(row.currency) ?? zero(row.currency);
+    totals.set(row.currency, add(current, parseAmount(row.amount, row.currency)));
+  }
+  return [...totals.values()]
+    .map((total) => ({ currency: total.currency, amount: formatAmount(total) }))
+    .sort((a, b) => a.currency.localeCompare(b.currency));
+}
+
 const STATUS_TEXT: Readonly<Record<InvoiceStatus, string>> = {
   due: "Invoice this month",
   due_date_unknown: "Check: due date unknown",
@@ -248,6 +261,10 @@ export const INVOICE_CSV_HEADERS = [
  * The summary as CSV. Starts with a byte-order mark so Excel reads non-ASCII
  * client names correctly, and uses CRLF line endings as RFC 4180 asks.
  */
+export function invoiceStatusText(status: InvoiceStatus): string {
+  return STATUS_TEXT[status];
+}
+
 export function invoiceCsv(rows: readonly InvoiceRow[]): string {
   const lines = [INVOICE_CSV_HEADERS.join(",")];
   for (const row of rows) {

@@ -17,7 +17,7 @@ This file is the honest split. Read it before trusting anything below.
 | The isolation tests are not vacuous | `scripts/test-rls-mutations.sh` breaks the model 11 ways | All 11 breaks caught |
 | Every repository query | `scripts/check-queries.sh` runs `PREPARE` against the real schema | 73 of 73 parse and plan |
 | That query check is not vacuous | A column name was misspelled on purpose | Caught |
-| `packages/core` | `node --test` | 160 tests pass |
+| `packages/core` | `node --test` | 161 tests pass |
 | `packages/db` encryption | `node --test` | 15 tests pass |
 | `apps/worker` logic | `node --test` | 59 tests pass |
 | `packages/core` types | `tsc --noEmit` | Clean |
@@ -25,7 +25,7 @@ This file is the honest split. Read it before trusting anything below.
 | Cross-package imports | `scripts/check-imports.py` | 181 symbols, all exported |
 | Erasable syntax | Every `.ts` loaded through Node's type stripper | All strippable |
 
-What the 234 unit tests actually cover, beyond arithmetic: RDAP and WHOIS
+What the 235 unit tests actually cover, beyond arithmetic: RDAP and WHOIS
 parsing against real response shapes, registrable-domain resolution including
 multi-level suffixes and punycode, wildcard certificate matching, the
 lifetime-based alert thresholds, the registry auto-renew trap, the private

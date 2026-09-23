@@ -242,6 +242,9 @@ export default async function DashboardPage() {
                 <button type="submit" className="button">
                   Download CSV
                 </button>
+                <button type="submit" className="button" formAction="/invoice">
+                  Print or PDF
+                </button>
               </div>
             </form>
           </Section>

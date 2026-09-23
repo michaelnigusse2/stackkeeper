@@ -105,7 +105,7 @@ Do these six things in order. They touch every part of the system.
 pnpm verify
 ```
 
-That runs the type checks and 234 unit tests. The database tests need a bit
+That runs the type checks and 235 unit tests. The database tests need a bit
 more:
 
 ```
