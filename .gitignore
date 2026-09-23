@@ -27,3 +27,6 @@ pgdata/
 # Python caches from the check scripts
 __pycache__/
 *.pyc
+
+# Output of the live monitoring check
+live-check-results.json
