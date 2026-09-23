@@ -32,13 +32,14 @@ Early, but it does the job it was built for.
 | Certificate monitoring, judged on lifetime used | Working, tested |
 | Alerts, with email, Slack, Discord and Telegram delivery | Working, tested |
 | Renewal reminders at 30, 14 and 3 days from dates you enter | Working, tested |
+| Shareable read-only client report links, with expiry and revoke | Working, tested |
 | Audit log and activity view | Working |
-| Two-factor sign-in (authenticator app) | Working, not yet tried in a browser |
+| Two-factor sign-in (authenticator app, with QR code) | Working, not yet tried in a browser |
 | Monthly "what to invoice" CSV export | Working, tested |
 | Provider imports, handoff packs, team roles | Not started |
 
-221 unit tests, 14 tenant-isolation assertions against a real Postgres, 9
-deliberate breaks of the isolation model that the suite catches, and 69
+229 unit tests, 15 tenant-isolation assertions against a real Postgres, 11
+deliberate breaks of the isolation model that the suite catches, and 73
 repository queries parsed against the live schema.
 
 ## Running it
@@ -119,7 +120,7 @@ ADMIN_URL=postgres://postgres@127.0.0.1:5432/postgres pnpm test:db
 ```
 
 That runs three things: the tenant isolation suite, a mutation run that breaks
-the isolation model eight ways and checks the suite notices each one, and a
+the isolation model eleven ways and checks the suite notices each one, and a
 pass that parses every repository query against the real schema.
 
 ## Contributing

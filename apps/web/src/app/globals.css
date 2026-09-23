@@ -1878,3 +1878,11 @@ legend {
 .field.invalid > label {
   color: var(--crit);
 }
+
+/* ------------------------------------------------------ client report page */
+
+/* The shared report has no app shell, so it sets its own measure. */
+.report {
+  max-width: 64rem;
+  margin-inline: auto;
+}

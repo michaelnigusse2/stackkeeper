@@ -52,3 +52,11 @@ insert into app.notification_channel (id, org_id, kind, label) values
 insert into app.audit_log (org_id, actor_user_id, action) values
   ('org_a', 'user_a', 'client.created'),
   ('org_b', 'user_b', 'client.created');
+
+-- Report links: one live link per organisation. The token hashes are sha256
+-- of 'token-a' and 'token-b'.
+insert into app.client_report_link (id, org_id, client_id, token_hash, expires_at) values
+  ('aaaaaaaa-0000-4000-8000-00000000000a', 'org_a', 'aaaaaaaa-0000-4000-8000-000000000001',
+   sha256('token-a'), now() + interval '30 days'),
+  ('bbbbbbbb-0000-4000-8000-00000000000a', 'org_b', 'bbbbbbbb-0000-4000-8000-000000000001',
+   sha256('token-b'), now() + interval '30 days');

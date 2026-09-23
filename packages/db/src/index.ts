@@ -11,4 +11,5 @@ export * from "./repo/fx.ts";
 export * from "./repo/monitors.ts";
 export * from "./repo/search.ts";
 export * from "./repo/renewals.ts";
+export * from "./repo/report-links.ts";
 export * from "./secret-box.ts";

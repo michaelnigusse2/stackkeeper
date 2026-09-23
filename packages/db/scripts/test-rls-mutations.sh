@@ -95,6 +95,17 @@ expect_caught "application role granted BYPASSRLS" \
 expect_caught "a cross-organisation policy attached to the application role" \
   "create policy worker_access_leak on app.client for all to stackkeeper_app using (true) with check (true);"
 
+expect_caught "report resolver ignores revocation" \
+  "create or replace function app.resolve_report_link(p_token_hash bytea)
+     returns table (org_id text, client_id uuid, link_id uuid, expires_at timestamptz)
+     language sql volatile security definer set search_path = pg_catalog, app as
+     \$\$ select l.org_id, l.client_id, l.id, l.expires_at from app.client_report_link l
+         where l.token_hash = p_token_hash \$\$;"
+
+expect_caught "report links made deletable" \
+  "grant delete on app.client_report_link to stackkeeper_app;
+   create policy tenant_delete on app.client_report_link for delete using (org_id = app.current_org());"
+
 # Leave the shared role as the migration intends, whatever happened above.
 psql "$ADMIN_URL" -v ON_ERROR_STOP=1 --no-psqlrc --quiet \
   -c "alter role stackkeeper_app nobypassrls;" >/dev/null

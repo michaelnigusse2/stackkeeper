@@ -174,3 +174,24 @@ acknowledges therefore stays acknowledged until the next stage, instead of
 reopening on the next hourly sweep, and moving the date forward retires the
 old reminders without anyone clicking. Dates more than 60 days overdue are
 left alone, so a first run against old data does not produce a wall of alerts.
+
+## Client report links: hashed, expiring, revocable, and narrow
+
+A client can be sent a link to a read-only page of their services, renewal
+dates and who owns each account. The page has no session, which is awkward
+for a database where every row is hidden until an organisation is set.
+
+- **One narrow door.** `app.resolve_report_link` is a security-definer
+  function that takes the SHA-256 of a token and returns the organisation and
+  client of a live link, and nothing else. The page then reads through the
+  ordinary tenant path, so row-level security still scopes every query.
+  Isolation check 15 makes sure resolving never exposes other links, and a
+  mutation checks that a resolver ignoring revocation is caught.
+- **Only the hash is stored.** A leaked database does not hand out working
+  links. The link is shown once, when it is created.
+- **Always expires** (7, 30 or 90 days; the schema refuses more than a year)
+  and can be revoked. Revoking is an update, never a delete, so the record of
+  what was shared survives.
+- **Shows less than the app does.** No costs, margins, charges, credential
+  references, notes or IP addresses, because links get forwarded. The page is
+  `noindex` and sends no referrer.

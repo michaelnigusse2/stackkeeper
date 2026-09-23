@@ -55,7 +55,7 @@ docker compose --profile full run --rm migrate
 ```
 
 The second command applies the schema from inside a container, so you do not
-need Postgres installed on Windows. You should see it apply four migrations.
+need Postgres installed on Windows. You should see it apply five migrations.
 
 Then create the login tables:
 
@@ -105,7 +105,7 @@ Do these six things in order. They touch every part of the system.
 pnpm verify
 ```
 
-That runs the type checks and 221 unit tests. The database tests need a bit
+That runs the type checks and 229 unit tests. The database tests need a bit
 more:
 
 ```

@@ -78,6 +78,7 @@ begin
   select count(*) into n from app.notification_channel;perform pg_temp.assert_eq(n, 0, 'notification_channel visible with no org set');
   select count(*) into n from app.audit_log;           perform pg_temp.assert_eq(n, 0, 'audit_log visible with no org set');
   select count(*) into n from app.organization_settings; perform pg_temp.assert_eq(n, 0, 'settings visible with no org set');
+  select count(*) into n from app.client_report_link;  perform pg_temp.assert_eq(n, 0, 'report link visible with no org set');
 
   raise notice 'PASS  3. unscoped connection sees nothing';
 end $$;
@@ -102,6 +103,7 @@ begin
   select count(*) into n from app.notification_channel; perform pg_temp.assert_eq(n, 1, 'org_a should see one channel');
   select count(*) into n from app.audit_log;            perform pg_temp.assert_eq(n, 1, 'org_a should see one audit row');
   select count(*) into n from app.organization_settings;perform pg_temp.assert_eq(n, 1, 'org_a should see its settings');
+  select count(*) into n from app.client_report_link;   perform pg_temp.assert_eq(n, 1, 'org_a should see one report link');
 
   raise notice 'PASS  4. org_a sees only its own rows';
 end $$;
@@ -319,6 +321,47 @@ begin
   perform pg_temp.assert(offenders is null,
     format('an unrestricted policy reaches the application role: %s', offenders));
   raise notice 'PASS 14. no unrestricted policy reaches the application role';
+end $$;
+
+-- ===========================================================================
+-- 15. A report token resolves to its own organisation and nothing else, and
+--     only while the link is live. The resolver is the one way in without an
+--     organisation set, so it must not become a way to browse other links.
+-- ===========================================================================
+do $$
+declare r record; n bigint;
+begin
+  perform set_config('app.org_id', '', false);
+
+  select * into r from app.resolve_report_link(sha256('token-b'));
+  perform pg_temp.assert(r.org_id = 'org_b', 'token-b should resolve to org_b');
+  perform pg_temp.assert(r.client_id = 'bbbbbbbb-0000-4000-8000-000000000001', 'token-b resolved to the wrong client');
+
+  select count(*) into n from app.resolve_report_link(sha256('no-such-token'));
+  perform pg_temp.assert_eq(n, 0, 'an unknown token resolved');
+
+  -- Resolving did not open the table up to the unscoped connection.
+  select count(*) into n from app.client_report_link;
+  perform pg_temp.assert_eq(n, 0, 'resolving a token exposed report links');
+
+  -- Revoked and expired links stop resolving.
+  perform set_config('app.org_id', 'org_a', false);
+  update app.client_report_link set revoked_at = now() where id = 'aaaaaaaa-0000-4000-8000-00000000000a';
+  select count(*) into n from app.resolve_report_link(sha256('token-a'));
+  perform pg_temp.assert_eq(n, 0, 'a revoked link still resolved');
+  update app.client_report_link set revoked_at = null, created_at = now() - interval '40 days',
+    expires_at = now() - interval '1 day' where id = 'aaaaaaaa-0000-4000-8000-00000000000a';
+  select count(*) into n from app.resolve_report_link(sha256('token-a'));
+  perform pg_temp.assert_eq(n, 0, 'an expired link still resolved');
+
+  -- The application role cannot delete a link, only revoke it.
+  begin
+    delete from app.client_report_link where id = 'aaaaaaaa-0000-4000-8000-00000000000a';
+    perform pg_temp.assert(false, 'the application role deleted a report link');
+  exception when insufficient_privilege then null;
+  end;
+
+  raise notice 'PASS 15. report tokens resolve only to their own live link';
 end $$;
 
 select 'ALL TENANT ISOLATION TESTS PASSED' as result;

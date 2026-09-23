@@ -3,12 +3,13 @@ import { notFound } from "next/navigation";
 import { RateTable, rollUpMargin } from "@stackkeeper/core";
 import {
   ensureSettings, getClient, latestRates, listAssets, listCostLinesForClient,
-  listCredentialRefs, listProjects, monitorsForAsset, toMarginInput,
+  listCredentialRefs, listProjects, listReportLinks, monitorsForAsset, toMarginInput,
 } from "@stackkeeper/db";
 import { CostLineForm } from "@/components/cost-line-form";
 import { CredentialForm } from "@/components/credential-form";
 import { Figure, Figures } from "@/components/figures";
 import { PageHead } from "@/components/page-head";
+import { ReportLinks, type ReportLinkView } from "@/components/report-links";
 import { Section } from "@/components/section";
 import { StatusDot, toneForState } from "@/components/status-dot";
 import { withPrincipal } from "@/lib/session";
@@ -41,12 +42,13 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
     if (!client) return null;
 
     const settings = await ensureSettings(tx, principal.orgId);
-    const [assets, costLines, credentials, rates, projects] = await Promise.all([
+    const [assets, costLines, credentials, rates, projects, reportLinks] = await Promise.all([
       listAssets(tx, principal.orgId, { clientId: id }),
       listCostLinesForClient(tx, principal.orgId, id),
       listCredentialRefs(tx, principal.orgId, id),
       latestRates(tx),
       listProjects(tx, principal.orgId, id),
+      listReportLinks(tx, principal.orgId, id),
     ]);
 
     const monitors = new Map<string, Awaited<ReturnType<typeof monitorsForAsset>>>();
@@ -58,6 +60,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
       credentials,
       projects,
       monitors,
+      reportLinks,
       currency: settings.reporting_currency,
       rollup: rollUpMargin(costLines.map(toMarginInput), settings.reporting_currency, new RateTable(rates)),
     };
@@ -69,6 +72,25 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   for (const line of data.rollup.lines) {
     linesByAsset.set(line.assetId, [...(linesByAsset.get(line.assetId) ?? []), line]);
   }
+
+  // Plain strings for the client component: no Date crosses into the browser.
+  const reportLinks: ReportLinkView[] = data.reportLinks.map((link) => {
+    const expired = new Date(link.expires_at).getTime() <= Date.now();
+    const live = link.revoked_at === null && !expired;
+    return {
+      id: link.id,
+      label: link.label,
+      createdOn: date(link.created_at),
+      expiresOn: date(link.expires_at),
+      live,
+      status: link.revoked_at
+        ? `Revoked ${date(link.revoked_at)}`
+        : expired
+          ? `Expired ${date(link.expires_at)}`
+          : `Works until ${date(link.expires_at)}`,
+      views: link.view_count,
+    };
+  });
 
   const projectById = new Map(data.projects.map((project) => [project.id, project]));
   const flagged = data.rollup.flagCounts.no_charge + data.rollup.flagCounts.below_cost;
@@ -317,6 +339,13 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                 <CredentialForm clientId={id} assets={data.assets} />
               </details>
             </div>
+          </Section>
+
+          <Section
+            title="Share with the client"
+            description="A read-only page of their services, renewal dates and who owns each account. No costs, no credentials."
+          >
+            <ReportLinks clientId={id} links={reportLinks} />
           </Section>
 
           {data.projects.length > 0 ? (

@@ -12,12 +12,12 @@ This file is the honest split. Read it before trusting anything below.
 
 | What | How | Result |
 | --- | --- | --- |
-| Migrations | Applied to a live Postgres 16 from empty | 4 of 4 apply cleanly |
-| Tenant isolation | `scripts/test-rls.sh` against a real database, as the unprivileged role | 14 assertions pass |
-| The isolation tests are not vacuous | `scripts/test-rls-mutations.sh` breaks the model 9 ways | All 9 breaks caught |
-| Every repository query | `scripts/check-queries.sh` runs `PREPARE` against the real schema | 69 of 69 parse and plan |
+| Migrations | Applied to a live Postgres 16 from empty | 5 of 5 apply cleanly |
+| Tenant isolation | `scripts/test-rls.sh` against a real database, as the unprivileged role | 15 assertions pass |
+| The isolation tests are not vacuous | `scripts/test-rls-mutations.sh` breaks the model 11 ways | All 11 breaks caught |
+| Every repository query | `scripts/check-queries.sh` runs `PREPARE` against the real schema | 73 of 73 parse and plan |
 | That query check is not vacuous | A column name was misspelled on purpose | Caught |
-| `packages/core` | `node --test` | 152 tests pass |
+| `packages/core` | `node --test` | 160 tests pass |
 | `packages/db` encryption | `node --test` | 15 tests pass |
 | `apps/worker` logic | `node --test` | 54 tests pass |
 | `packages/core` types | `tsc --noEmit` | Clean |
@@ -25,7 +25,7 @@ This file is the honest split. Read it before trusting anything below.
 | Cross-package imports | `scripts/check-imports.py` | 181 symbols, all exported |
 | Erasable syntax | Every `.ts` loaded through Node's type stripper | All strippable |
 
-What the 221 unit tests actually cover, beyond arithmetic: RDAP and WHOIS
+What the 229 unit tests actually cover, beyond arithmetic: RDAP and WHOIS
 parsing against real response shapes, registrable-domain resolution including
 multi-level suffixes and punycode, wildcard certificate matching, the
 lifetime-based alert thresholds, the registry auto-renew trap, the private
@@ -226,3 +226,20 @@ rather than the product:
 
 The query checker was itself checked for teeth: a deliberately misspelled
 column is rejected by `PREPARE`.
+
+## Added on 23 September
+
+- **QR code for two-factor setup.** The encoder in `packages/core/src/qr.ts`
+  was checked by rendering codes and reading them back with OpenCV's QR
+  decoder: versions 1 to 15, the shortest and longest payload for each, all
+  8 masks, 243 codes, every one decoding to the exact input. The setup
+  screen's SVG was also rendered in Chromium at 200px and scanned.
+- **Client report links.** Migration 0005, isolation check 15 and two new
+  mutations were run against Postgres 16. The full flow was run in SQL as the
+  application role: create, resolve without an organisation (counting views),
+  another workspace unable to see or revoke it, revoke, and a revoked link no
+  longer resolving. The report page and the share panel have not been
+  opened in a browser.
+- **Renewal reminders.** The two new queries, the no-reopen rule and the
+  stale-close rule were run against Postgres 16. The worker job itself has
+  not run end to end.
