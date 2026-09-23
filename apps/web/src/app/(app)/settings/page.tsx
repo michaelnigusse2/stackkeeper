@@ -2,7 +2,8 @@ import { ensureSettings, listChannels } from "@stackkeeper/db";
 import { PageHead } from "@/components/page-head";
 import { CurrencyForm } from "@/components/currency-form";
 import { ChannelManager } from "@/components/channel-manager";
-import { withPrincipal } from "@/lib/session";
+import { TwoFactorSettings } from "@/components/two-factor-settings";
+import { requireSession, withPrincipal } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -12,9 +13,25 @@ export default async function SettingsPage() {
     channels: await listChannels(tx, principal.orgId),
   }));
 
+  const session = await requireSession();
+  const twoFactorEnabled = session.user.twoFactorEnabled === true;
+
   return (
     <>
       <PageHead title="Settings" />
+
+      <div className="card">
+        <div className="card-head">
+          <div>
+            <h2>Two-factor authentication</h2>
+            <p className="muted small">
+              A code from your phone as well as your password. Worth turning on: this account holds
+              a map of your clients&apos; infrastructure.
+            </p>
+          </div>
+        </div>
+        <TwoFactorSettings enabled={twoFactorEnabled} />
+      </div>
 
       <div className="card">
         <div className="card-head">
@@ -62,7 +79,7 @@ export default async function SettingsPage() {
         </p>
         <p className="muted small">
           What it does hold is still worth protecting: a list of your clients and their servers is
-          a useful map to an attacker. Turn on two-factor authentication for your account.
+          a useful map to an attacker. Turn on two-factor authentication above.
         </p>
       </div>
     </>

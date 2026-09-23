@@ -63,7 +63,10 @@ export const auth = betterAuth({
       organizationLimit: 5,
       membershipLimit: 50,
     }),
-    twoFactor(),
+    twoFactor({
+      // The name authenticator apps show next to the code.
+      issuer: "Stackkeeper",
+    }),
   ],
 });
 
