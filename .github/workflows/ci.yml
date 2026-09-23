@@ -1,0 +1,76 @@
+# GitHub Actions workflow for Stackkeeper.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: Unit tests and types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      # Static checks first: they need no install and take milliseconds, so a
+      # broken import, a Date rendered into JSX, or a Date compared against
+      # a string fails in seconds rather than after the whole dependency
+      # tree has been fetched.
+      - name: Imported symbols exist
+        run: pnpm check:imports
+      - name: No Date or object rendered straight into JSX
+        run: pnpm check:render
+      - name: No date compared without normalising
+        run: pnpm check:date
+      - name: Every class, button and token is styled
+        run: pnpm check:styles
+      - name: Text clears 4.5:1 in every theme
+        run: pnpm check:contrast
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  database:
+    name: Schema, isolation and queries
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      ADMIN_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      # Every tenant table must refuse to show one workspace's rows to
+      # another. This job is the gate: if it fails, nothing merges.
+      - name: Tenant isolation
+        run: packages/db/scripts/test-rls.sh
+
+      # A security test that cannot fail is worse than none, so the suite is
+      # checked against deliberate breaks of the model it is meant to protect.
+      - name: Isolation tests actually catch breaks
+        run: packages/db/scripts/test-rls-mutations.sh
+
+      # Every repository query is parsed and planned against the real schema.
+      - name: Queries match the schema
+        run: packages/db/scripts/check-queries.sh

@@ -1,0 +1,30 @@
+{
+  "name": "@stackkeeper/web",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "auth:migrate": "node scripts/auth-migrate.mjs"
+  },
+  "dependencies": {
+    "@stackkeeper/core": "workspace:*",
+    "@stackkeeper/db": "workspace:*",
+    "better-auth": "^1.3.0",
+    "next": "^16.3.0",
+    "pg": "^8.13.0",
+    "postgres": "^3.4.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
+}

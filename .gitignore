@@ -1,0 +1,29 @@
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Secrets. The example file is committed; the real one never is.
+.env
+.env.*
+!.env.example
+
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+.turbo/
+.vercel/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Local database volumes
+pgdata/
+
+# Python caches from the check scripts
+__pycache__/
+*.pyc

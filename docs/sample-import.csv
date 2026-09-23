@@ -1,0 +1,25 @@
+Client,Label,Kind,Provider,Identifier,Expires,Cost,Currency,Cycle,Charge,Owner,Notes
+Northgate Retail,northgate.co.uk,domain,Gandi,northgate.co.uk,2027-03-08,14.00,USD,annual,48.00,Us,
+Northgate Retail,shop.northgate.co.uk,certificate,Let's Encrypt,shop.northgate.co.uk,2026-09-26,,,,,Client,"Renewal sits with the client, not us"
+Northgate Retail,Hetzner CPX31,server,Hetzner,116.203.44.18,,29.00,USD,monthly,75.00,Us,
+Northgate Retail,Cloudflare Pro,cdn,Cloudflare,northgate.co.uk,,20.00,USD,monthly,12.00,Us,Charged below cost since 2024
+Northgate Retail,Fathom Analytics,saas,Fathom,,,14.00,USD,monthly,25.00,Us,
+Latham Design,lathamdesign.com,domain,Namecheap,lathamdesign.com,2026-10-11,12.00,USD,annual,40.00,Us,
+Latham Design,mail.lathamdesign.com,certificate,Let's Encrypt,mail.lathamdesign.com,2026-12-01,,,,,Us,
+Latham Design,Mailgun Foundation,email,Mailgun,,,35.00,USD,monthly,,Us,Nobody is billed for this
+Latham Design,Adobe CC - 3 seats,license,Adobe,,2026-10-22,179.97,USD,monthly,210.00,Client,
+Latham Design,DigitalOcean droplet,server,DigitalOcean,164.92.71.30,,24.00,USD,monthly,22.00,Us,Below cost after the last price rise
+Bramley Clinic,bramleyclinic.com,domain,123-reg,bramleyclinic.com,04/11/2026,15.00,USD,annual,45.00,Us,Date written day-first on purpose
+Bramley Clinic,api.bramleyclinic.com,certificate,Sectigo,api.bramleyclinic.com,2026-10-18,69.00,USD,annual,120.00,Us,
+Bramley Clinic,Hetzner CX41,server,Hetzner,95.216.12.7,,$38.00,USD,monthly,,Us,Unbilled - nobody is paying for this
+Bramley Clinic,Backblaze B2,storage,Backblaze,,,6.00,USD,monthly,15.00,Us,
+Pelham & Co,pelhamandco.uk,domain,123-reg,pelhamandco.uk,2026-10-09,11.00,USD,annual,36.00,Client,
+Pelham & Co,Managed WordPress,hosting,WP Engine,pelhamandco.uk,2027-01-15,30.00,USD,monthly,60.00,Us,
+Pelham & Co,Route 53 zone,dns,AWS,pelhamandco.uk,,0.50,USD,monthly,5.00,Us,
+Pelham & Co,Postgres cluster,database,Neon,,,19.00,USD,monthly,45.00,Us,
+Aldridge Tutors,aldridgetutors.com,domain,Gandi,aldridgetutors.com,2026-09-30,14.00,USD,annual,40.00,Us,
+Aldridge Tutors,Wildcard certificate,certificate,Let's Encrypt,*.aldridgetutors.com,2026-11-20,,,,,Us,
+Aldridge Tutors,Netlify Pro,hosting,Netlify,aldridgetutors.com,,19.00,USD,monthly,35.00,Us,
+Aldridge Tutors,Zoom Pro - 2 seats,saas,Zoom,,2027-02-01,,,,,Client,Client pays Zoom directly so there is no cost to us
+Aldridge Tutors,Twilio SMS,saas,Twilio,,,25.00,USD,monthly,25.00,Us,Passed through at cost
+Aldridge Tutors,Old staging box,server,Linode,45.79.12.88,,12.00,USD,monthly,,Us,Probably decommissionable and nobody is billed

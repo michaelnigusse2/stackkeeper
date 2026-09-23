@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // The secret scanner and the form reader run in the browser as well as on
+    // the server, so this package is compiled against the web platform types.
+    "lib": ["ES2023", "DOM"]
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"]
+}

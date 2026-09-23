@@ -1,0 +1,33 @@
+{
+  "name": "stackkeeper",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=22.6.0",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "pnpm --filter @stackkeeper/core test && pnpm --filter @stackkeeper/db test:unit && pnpm --filter @stackkeeper/worker test",
+    "test:db": "pnpm --filter @stackkeeper/db test && pnpm --filter @stackkeeper/db test:mutations && pnpm --filter @stackkeeper/db check:queries",
+    "verify": "pnpm typecheck && pnpm test && pnpm check:imports && pnpm check:render && pnpm check:date && pnpm check:styles && pnpm check:contrast && pnpm test:db",
+    "migrate": "pnpm --filter @stackkeeper/db migrate",
+    "format": "prettier --write .",
+    "check:render": "python3 scripts/check-render-safety.py",
+    "check:date": "python3 scripts/check-date-logic.py",
+    "check:styles": "python3 scripts/check-styles.py",
+    "check:contrast": "python3 scripts/check-contrast.py",
+    "check:imports": "python3 scripts/check-imports.py"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "prettier": "^3.4.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  }
+}

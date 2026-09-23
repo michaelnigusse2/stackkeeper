@@ -1,0 +1,1880 @@
+/* Stackkeeper — interface styles.
+ *
+ * The design is deliberately *not* a grid of panels. There are no cards, no
+ * borders around sections, and no grey page with white boxes floating on it.
+ * The page is one continuous surface; space and type do the separating, and a
+ * hairline appears only where a line genuinely helps the eye. Colour is
+ * reserved for status — nothing here is coloured for decoration.
+ *
+ * That has a practical consequence worth knowing before editing: if a section
+ * looks like it needs a box drawn round it, it almost always needs more space
+ * above it instead.
+ *
+ * Light and dark are the same design with different tokens. Nothing below the
+ * token block knows which theme is active, so a new colour belongs in both
+ * :root and [data-theme="dark"] and nowhere else.
+ *
+ * Plain CSS, no framework, so someone self-hosting can restyle a button
+ * without learning a build pipeline.
+ */
+
+/* ------------------------------------------------------------------ tokens */
+
+/* Direction A, "Graphite".
+ *
+ * Three rules produce this palette, and they are the difference between a
+ * current tool and a 2015 corporate web app:
+ *
+ * 1. Neutrals are COOL. The blue channel sits above the red one throughout,
+ *    slightly at the extremes and clearly through the mid-greys. The previous
+ *    palette was warm (#f1f0ec), which is the single loudest dated signal.
+ *
+ * 2. The accent is desaturated and is punctuation, not paint. It touches
+ *    links, focus rings and the active tab. It is never a large fill. The
+ *    palette this replaced used #0b5cab -- HSL 210/88/36, which is LinkedIn's
+ *    #0a66c2 (HSL 210/90/40) to within four points of lightness.
+ *
+ * 3. The primary action is near-black, not accent-coloured, because the most
+ *    important control on a page should have the most contrast, and contrast
+ *    is a stronger signal than hue. It inverts to near-white in dark.
+ *
+ * Depth is a hairline. Shadows appear only on things that genuinely float
+ * above the page -- menus and dialogs -- never on the page's own furniture.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Ground and surface sit close together on purpose: the hairline does the
+   * separating, so the step only has to be felt, not seen. */
+  --ground: #fbfbfc;
+  --bg: #ffffff;
+  --raised: #ffffff;
+  --sunken: #f3f4f6;
+  --sunken-hover: #e9eaef;
+
+  --rule: #e4e6eb;
+  --hair: #eceef1;
+  --edge: #dfe1e7;
+
+  /* All clear 4.5:1 on --bg; --faint is the tightest at 4.79:1. */
+  --text: #14151a;
+  --text-2: #3e404a;
+  --muted: #5c5f6b;
+  --faint: #6b6f7d;
+
+  --grey-mark: #c9ccd4;
+
+  --accent: #5864d0;
+  --accent-hover: #3c4bc9;
+  --accent-wash: #eef0fb;
+
+  /* The high-contrast pair, for the one action that matters most. */
+  --strong: #14151a;
+  --on-strong: #ffffff;
+
+  --ok: #0f7b55;
+  --warn: #8f6300;
+  --crit: #c1372c;
+  --info: #5864d0;
+
+  --ok-wash: #edf7f3;
+  --warn-wash: #fbf4e7;
+  --crit-wash: #fdf1f0;
+  --info-wash: #eef0fb;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.75rem;
+
+  /* Tighter than before. 16px containers read as a consumer app; 10px reads
+   * as a tool. Controls sit at 6px. */
+  --radius: 6px;
+  --radius-sm: 4px;
+  --radius-lg: 10px;
+  --radius-pill: 999px;
+
+  /* Only --shadow-3 is used, and only by menus. The other two exist because
+   * something floating may need a lighter lift later; nothing on the page
+   * itself should use them. */
+  --shadow-1: 0 1px 2px rgb(20 21 26 / 5%);
+  --shadow-2: 0 4px 12px rgb(20 21 26 / 7%);
+  --shadow-3: 0 12px 32px rgb(20 21 26 / 12%), 0 0 0 1px rgb(20 21 26 / 4%);
+
+  --font: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Menlo,
+    Consolas, monospace;
+
+  --header-height: 3.25rem;
+  --nav-height: 2.375rem;
+  --rail-width: 19rem;
+  --sidebar-width: 15rem;
+  --page-inline: 1.75rem;
+  --transition: 110ms ease;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Cool the whole way down, same as light. Height is carried by lightness
+   * rather than shadow -- a shadow has too little contrast against a dark
+   * ground to read at all -- so the ladder is ground, surface, raised. The
+   * ground is not pure black: black flattens what little depth there is and
+   * light text on it is tiring.
+   *
+   * The accent lightens rather than brightens: hue and chroma are kept and
+   * only lightness moves, which is how a tone-based system shifts an accent
+   * between themes. The primary button inverts to near-white. */
+  --ground: #0b0b0e;
+  --bg: #121316;
+  --raised: #1c1d22;
+  --sunken: #1a1b20;
+  --sunken-hover: #24252b;
+
+  --rule: #26282e;
+  --hair: #1e1f24;
+  --edge: #2e3138;
+
+  --text: #f2f3f5;
+  --text-2: #c2c5cc;
+  --muted: #a3a7b0;
+  --faint: #8a8f98;
+
+  --grey-mark: #444852;
+
+  --accent: #8b95ea;
+  --accent-hover: #a5adf1;
+  --accent-wash: #1c2040;
+
+  --strong: #f2f3f5;
+  --on-strong: #0b0b0e;
+
+  --ok: #3fc88a;
+  --warn: #e0a83c;
+  --crit: #ef6f66;
+  --info: #8b95ea;
+
+  --ok-wash: #10261d;
+  --warn-wash: #291f12;
+  --crit-wash: #2c1716;
+  --info-wash: #1c2040;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-2: 0 4px 12px rgb(0 0 0 / 45%);
+  --shadow-3: 0 12px 32px rgb(0 0 0 / 55%), 0 0 0 1px rgb(255 255 255 / 6%);
+}
+
+/* Someone who has never touched the toggle gets their system preference.
+ * Guarded so an explicit choice of light always wins over the media query. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* Cool the whole way down, same as light. Height is carried by lightness
+     * rather than shadow -- a shadow has too little contrast against a dark
+     * ground to read at all -- so the ladder is ground, surface, raised. The
+     * ground is not pure black: black flattens what little depth there is and
+     * light text on it is tiring.
+     *
+     * The accent lightens rather than brightens: hue and chroma are kept and
+     * only lightness moves, which is how a tone-based system shifts an accent
+     * between themes. The primary button inverts to near-white. */
+    --ground: #0b0b0e;
+    --bg: #121316;
+    --raised: #1c1d22;
+    --sunken: #1a1b20;
+    --sunken-hover: #24252b;
+
+    --rule: #26282e;
+    --hair: #1e1f24;
+    --edge: #2e3138;
+
+    --text: #f2f3f5;
+    --text-2: #c2c5cc;
+    --muted: #a3a7b0;
+    --faint: #8a8f98;
+
+    --grey-mark: #444852;
+
+    --accent: #8b95ea;
+    --accent-hover: #a5adf1;
+    --accent-wash: #1c2040;
+
+    --strong: #f2f3f5;
+    --on-strong: #0b0b0e;
+
+    --ok: #3fc88a;
+    --warn: #e0a83c;
+    --crit: #ef6f66;
+    --info: #8b95ea;
+
+    --ok-wash: #10261d;
+    --warn-wash: #291f12;
+    --crit-wash: #2c1716;
+    --info-wash: #1c2040;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 40%);
+    --shadow-2: 0 4px 12px rgb(0 0 0 / 45%);
+    --shadow-3: 0 12px 32px rgb(0 0 0 / 55%), 0 0 0 1px rgb(255 255 255 / 6%);
+  }
+}
+
+/* -------------------------------------------------------------------- base */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  background: var(--ground);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+
+h1 {
+  font-size: 1.875rem;
+  letter-spacing: -0.032em;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 1rem;
+  letter-spacing: -0.018em;
+}
+
+h3 {
+  font-size: 0.875rem;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------ shell */
+
+/* Navigation runs down the side, and the sidebar is part of the ground rather
+ * than a panel sitting on it: no fill, no border, no shadow. The content is
+ * the only surface, floating beside it. That is what stops a sidebar reading
+ * like a 2010s admin template, where the sidebar was a dark slab and the
+ * content a white slab and the whole page a pair of blocks.
+ *
+ * It collapses to an icon rail, which is the answer to the objection that put
+ * navigation on top in the first place: a sidebar costs width on every page,
+ * and nearly every page here is a wide table of money and dates. Collapsed, it
+ * costs 56px instead of 240.
+ *
+ * The width is a custom property set on <html>, so CSS alone does the layout.
+ * No React state is involved, which means no flash while hydrating and no
+ * hydration mismatch -- the same reason the theme works the way it does. */
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ground);
+}
+
+/* Brand, search and account span the full width.
+ *
+ * Search lived in the sidebar and was squeezed: 240px less padding leaves a
+ * field about 130px wide, and the shortcut hint ate more of that, so the
+ * placeholder truncated mid-word. Up here it gets 28rem and the hint has room.
+ *
+ * This bar holds only things that belong to the whole application. It does not
+ * repeat the page title, which is what made the previous top bar redundant. */
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 3.25rem;
+  padding-inline: var(--space-4);
+  background: var(--ground);
+  border-block-end: 1px solid var(--rule);
+}
+
+.appbar-spacer {
+  flex-grow: 1;
+}
+
+.shell-body {
+  flex-grow: 1;
+  display: flex;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.sidebar {
+  position: sticky;
+  top: 3.25rem;
+  flex-shrink: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - 3.25rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  overflow: visible;
+  transition: width var(--transition);
+}
+
+.brand {
+  /* Does not grow. It used to, because in the sidebar head it had to push the
+   * collapse button to the far edge. In the top bar growing it would open 400px
+   * of dead space between the wordmark and the search field. */
+  flex-shrink: 0;
+  min-width: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.brand:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* Sits in the head when open; centred in the rail when closed. */
+.sidebar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.sidebar-toggle:hover {
+  background: var(--sunken);
+  color: var(--text);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+/* A row, not a tab. The active one is a soft filled shape -- not a left border
+ * rule, which is the single most dated sidebar idiom there is. */
+.nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 2rem;
+  padding-inline: var(--space-2);
+  border-radius: var(--radius);
+  font-size: 0.84375rem;
+  font-weight: 450;
+  color: var(--text-2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+}
+
+.nav a:hover {
+  background: var(--sunken);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav a[aria-current="page"] {
+  background: var(--sunken);
+  color: var(--text);
+  font-weight: 550;
+}
+
+/* The one touch of accent: the active row's icon. The label stays neutral so
+ * the colour marks position without shouting. */
+.nav a[aria-current="page"] .nav-icon {
+  color: var(--accent);
+}
+
+.nav-icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--faint);
+}
+
+.nav a:hover .nav-icon {
+  color: var(--text-2);
+}
+
+.nav-text {
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.nav-label {
+  padding: var(--space-3) var(--space-2) var(--space-1);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* The content is the only floating surface on the page. */
+/* The page itself is the ground. Wrapping everything in one bordered surface
+ * put the definition at the wrong level: the container was a card and the
+ * content inside it was undefined, so a page with three sections on it read as
+ * one large mostly-empty panel. The sections carry the cards instead. */
+.main {
+  flex-grow: 1;
+  min-width: 0;
+  padding: var(--space-5) var(--page-inline) var(--space-6);
+  background: transparent;
+}
+
+/* ------------------------------------------------------------- icon rail */
+
+/* Collapsed. Everything that carries text is hidden and the rows centre on
+ * their icons; nothing is re-rendered, so the transition is just a width. */
+:root[data-nav="collapsed"] {
+  --sidebar-width: 3.5rem;
+}
+
+/* Only what is inside the sidebar hides. The brand and the account email sit
+ * in the top bar, which does not collapse -- scoping these to `.sidebar`
+ * matters, because without it collapsing the rail blanked the brand and the
+ * signed-in address up in the bar as well. */
+:root[data-nav="collapsed"] .sidebar .nav-text,
+:root[data-nav="collapsed"] .sidebar .nav-label {
+  display: none;
+}
+
+:root[data-nav="collapsed"] .nav a {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+/* The count dot has no room beside a label, so it rides the icon's corner. */
+:root[data-nav="collapsed"] .nav a {
+  position: relative;
+}
+
+:root[data-nav="collapsed"] .count-dot {
+  position: absolute;
+  top: 0.3125rem;
+  inset-inline-end: 0.75rem;
+}
+
+/* Narrow windows get the rail whatever the stored preference says: 240px of
+ * navigation on a laptop screen is most of the room the table needs. */
+@media (max-width: 64rem) {
+  :root {
+    --sidebar-width: 3.5rem;
+  }
+
+  .sidebar .nav-text,
+  .sidebar .nav-label {
+    display: none;
+  }
+
+  .nav a {
+    justify-content: center;
+    padding-inline: 0;
+  }
+}
+
+/* ----------------------------------------------------------------- search */
+
+.header-search {
+  position: relative;
+  flex: 0 1 28rem;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 2rem;
+  padding-inline: var(--space-3);
+  background: var(--sunken);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--faint);
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.header-search:focus-within {
+  background: var(--bg);
+  border-color: var(--accent);
+}
+
+/* Two classes, not `.header-search input`, and the class is the whole point.
+ *
+ * The generic control rule further down this file matches `input[type="search"]`
+ * -- the same specificity as `.header-search input`, but written later, so it
+ * won. The field was painting its own border and padding inside the pill, and
+ * its `min-height: 2.125rem` made it 34px tall in a 32px pill: a bordered box
+ * bulging out of a rounded one, which is what "something on the right I can't
+ * see properly" was. A second class settles it by specificity instead of by
+ * where the rule happens to sit. */
+.header-search .search-field {
+  flex-grow: 1;
+  width: auto;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--text);
+}
+
+/* Chrome draws its own clear button in a search field. It sits where the
+ * shortcut hint does and is the wrong grey. */
+.header-search .search-field::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* The shortcut hint. Disappears once there is something typed. */
+.search-hint {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  color: var(--faint);
+}
+
+/* --------------------------------------------------------------- page head */
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-5);
+  margin-block-end: var(--space-6);
+}
+
+.page-head > div:first-child {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.page-head .actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.page-head h1 {
+  margin-block-start: var(--space-2);
+}
+
+.page-head p {
+  margin-block-start: 0.5rem;
+  font-size: 0.84375rem;
+  color: var(--muted);
+}
+
+.breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--faint);
+  margin-block-end: var(--space-3);
+}
+
+.breadcrumb span[aria-hidden="true"] {
+  padding-inline: var(--space-1);
+  color: var(--grey-mark);
+}
+
+/* ----------------------------------------------------------------- figures */
+
+/* A row of key numbers, one small panel each.
+ *
+ * These were unboxed for a while, on the argument that four bordered boxes in
+ * a grid is what makes an interface look like a downloaded template. What made
+ * that true was the flat page underneath: the boxes were the same colour as
+ * everything around them, so the borders were decoration and nothing else.
+ * Now that the page is a ground and content sits on it, a figure in its own
+ * panel reads as one fact you can take in by itself, which is the whole job of
+ * a headline number.
+ *
+ * `auto-fit` with a floor means four across on a wide screen, two on a tablet
+ * and one on a phone, without writing a breakpoint for each. The floor is set
+ * from the widest thing a figure holds -- a formatted amount at the value size
+ * -- so a number never wraps mid-figure. */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+}
+
+.figure {
+  min-width: 0;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+}
+
+.stat dt,
+.figure-label {
+  font-size: 0.78125rem;
+  color: var(--muted);
+}
+
+.stat dd,
+.figure-value {
+  margin: 0;
+  margin-block-start: 0.375rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.036em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat .note,
+.figure-note {
+  margin-block-start: 0.4375rem;
+  font-size: 0.78125rem;
+  color: var(--faint);
+}
+
+.positive {
+  color: var(--ok);
+}
+
+.negative {
+  color: var(--crit);
+}
+
+/* A smaller figures row, for a record header rather than a page of totals.
+ * Narrower panels, because a record header carries five of them and they sit
+ * above a tab strip that wants the vertical room. */
+.figures.compact {
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  gap: var(--space-2);
+}
+
+.figures.compact .figure {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.figures.compact .figure-value {
+  font-size: 1.375rem;
+  letter-spacing: -0.028em;
+}
+
+.figure-value small {
+  font-size: 0.8125rem;
+  font-weight: 450;
+  letter-spacing: 0;
+  color: var(--faint);
+}
+
+/* ---------------------------------------------------------------- sections */
+
+/* A panel on the ground.
+ *
+ * `.card` spent a while as a bare region -- no background, no border -- because
+ * a page of boxes inside boxes is the look of a dashboard nobody designed. The
+ * correction went too far: with the page and its contents the same colour, a
+ * screen read as one undivided sheet with headings scattered down it. A panel
+ * that is a shade above the ground and edged with a hairline separates the
+ * work from the page without stacking borders. */
+.card {
+  padding: var(--space-5);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  margin-block-end: var(--space-4);
+}
+
+.card:last-child {
+  margin-block-end: 0;
+}
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+}
+
+.card-head > div:first-child {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.card-head h2 + p {
+  margin-block-start: 0.3125rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.card-head .count {
+  font-size: 0.8125rem;
+  color: var(--faint);
+}
+
+.card-foot {
+  margin-block-start: var(--space-3);
+  font-size: 0.8125rem;
+}
+
+/* ------------------------------------------------------------------ split */
+
+/* Main column plus a rail that hangs off a single vertical rule. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--rail-width);
+  gap: var(--space-4);
+}
+
+.split > .col-main,
+.split > .rail {
+  min-width: 0;
+}
+
+@media (max-width: 68rem) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .split > .rail {
+    margin-block-start: var(--space-4);
+  }
+}
+
+/* ------------------------------------------------------------------ tables */
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84375rem;
+}
+
+/* No fill behind the header row and no box around the table: a column label is
+ * small grey text above a hairline, and the table bleeds to the column edges. */
+thead th {
+  text-align: start;
+  padding: 0 var(--space-4) 0.5625rem;
+  border-block-end: 1px solid var(--edge);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+thead th:first-child {
+  padding-inline-start: 0;
+}
+
+thead th:last-child {
+  padding-inline-end: 0;
+}
+
+tbody td {
+  padding: 0.8125rem var(--space-4);
+  border-block-end: 1px solid var(--hair);
+  vertical-align: top;
+}
+
+tbody td:first-child {
+  padding-inline-start: 0;
+}
+
+tbody td:last-child {
+  padding-inline-end: 0;
+}
+
+tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+tbody tr:hover td {
+  background: var(--hair);
+}
+
+th.num,
+td.num {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* A sortable column header is a real button, not a clickable th. */
+thead th button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+thead th button:hover {
+  color: var(--text);
+}
+
+/* The second line in a cell: the thing the first line belongs to. */
+.sub {
+  display: block;
+  margin-block-start: 0.125rem;
+  font-size: 0.78125rem;
+  color: var(--faint);
+}
+
+/* ----------------------------------------------------------------- status */
+
+/* Status is a coloured dot and coloured text, never a filled pill. Pills are
+ * boxes, and a table full of them reads as a table full of boxes. */
+.badge,
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* `.badge` draws its own dot, because it is used as a bare span of text.
+ * `.status` does NOT: StatusDot renders a real `.dot` element inside it, and a
+ * pseudo-element here would put two dots on every status in the app. */
+.badge::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.badge.critical,
+.status.critical {
+  color: var(--crit);
+}
+
+.badge.warning,
+.status.warning {
+  color: var(--warn);
+}
+
+.badge.ok,
+.status.ok {
+  color: var(--ok);
+}
+
+.badge.info,
+.status.info {
+  color: var(--info);
+}
+
+.badge.quiet,
+.status.quiet {
+  color: var(--faint);
+}
+
+.badge.quiet::before,
+.status.quiet::before {
+  background: var(--grey-mark);
+}
+
+/* A bare dot, for a table cell that carries its label separately. */
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--grey-mark);
+  flex-shrink: 0;
+}
+
+.dot.critical {
+  background: var(--crit);
+}
+
+.dot.warning {
+  background: var(--warn);
+}
+
+.dot.ok {
+  background: var(--ok);
+}
+
+.dot.info {
+  background: var(--info);
+}
+
+/* The alert count beside a nav item: a dot, not a numbered badge, unless the
+ * number is genuinely useful. */
+.nav .count-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--crit);
+}
+
+/* ---------------------------------------------------------------- worklist */
+
+/* The dashboard's queue: an icon in its status colour, a plain-English
+ * headline, the thing it concerns underneath, then when and a row menu. */
+.worklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8125rem;
+  padding-block: 0.8125rem;
+  border-block-start: 1px solid var(--hair);
+}
+
+.worklist-item:first-child {
+  border-block-start: 0;
+}
+
+.worklist-icon {
+  display: flex;
+  flex-shrink: 0;
+  padding-block-start: 0.0625rem;
+  color: var(--faint);
+}
+
+.worklist-icon.critical {
+  color: var(--crit);
+}
+
+.worklist-icon.warning {
+  color: var(--warn);
+}
+
+.worklist-icon.ok {
+  color: var(--ok);
+}
+
+.worklist-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.worklist-title {
+  font-size: 0.875rem;
+  font-weight: 550;
+  letter-spacing: -0.005em;
+}
+
+.worklist-meta {
+  margin-block-start: 0.1875rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.worklist-when {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: var(--faint);
+  padding-block-start: 0.0625rem;
+  white-space: nowrap;
+}
+
+/* A compact two-line row used in the rail and in related lists. */
+.line-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-block: 0.5625rem;
+  border-block-start: 1px solid var(--hair);
+}
+
+.line-item:first-of-type {
+  border-block-start: 0;
+}
+
+.line-item .grow {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.line-lead {
+  width: 2.25rem;
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--faint);
+}
+
+.line-lead.critical {
+  color: var(--crit);
+}
+
+.line-lead.warning {
+  color: var(--warn);
+}
+
+/* ------------------------------------------------------------------- tabs */
+
+.tabs {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-1);
+  border-block-end: 1px solid var(--rule);
+  margin-block-end: var(--space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs a {
+  padding: 0 var(--space-3) 0.6875rem;
+  font-size: 0.84375rem;
+  font-weight: 450;
+  color: var(--text-2);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tabs a:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tabs a[aria-current="page"] {
+  font-weight: 600;
+  color: var(--accent);
+  box-shadow: inset 0 -1.5px 0 var(--accent);
+}
+
+/* ----------------------------------------------------------------- notices */
+
+/* A notice is a line of coloured text with a rule under it, not a tinted box. */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding-block-end: var(--space-4);
+  margin-block-end: var(--space-5);
+  border-block-end: 1px solid var(--rule);
+  font-size: 0.84375rem;
+  color: var(--muted);
+}
+
+.notice.error {
+  color: var(--crit);
+}
+
+.notice.warning {
+  color: var(--warn);
+}
+
+.notice.ok {
+  color: var(--ok);
+}
+
+.notice a {
+  white-space: nowrap;
+}
+
+/* The one place a wash is used: a form-level error, where the tint is what
+ * makes it findable after a failed submit. */
+.notice.boxed {
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--crit-wash);
+  color: var(--crit);
+}
+
+/* ----------------------------------------------------------------- buttons */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  height: 2.125rem;
+  padding-inline: 0.875rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--sunken);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.button:hover {
+  background: var(--sunken-hover);
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* Near-black in light, near-white in dark: the most important control gets
+ * the most contrast. Hover brightens rather than swapping colour, which is
+ * how current tools do it and which needs no second token. */
+.button.primary {
+  background: var(--strong);
+  color: var(--on-strong);
+  font-weight: 550;
+}
+
+.button.primary:hover {
+  background: var(--strong);
+  color: var(--on-strong);
+  filter: brightness(1.35);
+}
+
+.button.small {
+  height: 1.8125rem;
+  padding-inline: 0.75rem;
+  font-size: 0.78125rem;
+}
+
+.button.quiet {
+  background: transparent;
+  color: var(--muted);
+}
+
+.button.quiet:hover {
+  background: var(--sunken);
+  color: var(--text);
+}
+
+.button.danger {
+  background: transparent;
+  color: var(--crit);
+}
+
+.button.danger:hover {
+  background: var(--crit-wash);
+  color: var(--crit);
+}
+
+.button[disabled],
+.button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* An icon-only control: no fill until hovered. */
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.icon-button:hover {
+  background: var(--sunken);
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------------- forms */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-block-end: var(--space-4);
+}
+
+.field > label,
+.field-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.field input,
+.field select,
+.field textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+input[type="date"],
+input[type="search"],
+select,
+textarea {
+  width: 100%;
+  min-height: 2.125rem;
+  padding: 0.4375rem 0.6875rem;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-family: inherit;
+  font-size: 0.84375rem;
+  color: var(--text);
+  transition: border-color var(--transition);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field input[aria-invalid="true"],
+.field select[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--crit);
+}
+
+textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.field-row > .field {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.hint {
+  font-size: 0.78125rem;
+  color: var(--faint);
+}
+
+.field .error,
+.error {
+  font-size: 0.78125rem;
+  color: var(--crit);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.84375rem;
+}
+
+.checkbox input {
+  width: 0.875rem;
+  height: 0.875rem;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--strong);
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  padding: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+/* ------------------------------------------------------------------ filters */
+
+/* List-view filters sit on the page, not inside a toolbar box. */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5625rem;
+  flex-wrap: wrap;
+  margin-block-end: var(--space-5);
+}
+
+.filter-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 1.9375rem;
+  width: 15rem;
+  padding-inline: var(--space-3);
+  background: var(--sunken);
+  border-radius: var(--radius);
+  color: var(--faint);
+}
+
+.filter-search input {
+  flex-grow: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 0.78125rem;
+  color: var(--text);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 1.9375rem;
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.78125rem;
+  font-weight: 450;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.chip:hover {
+  background: var(--sunken);
+  color: var(--text);
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--accent-wash);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------- stacks */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stack-tight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.spread {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* -------------------------------------------------------------- empty state */
+
+.empty {
+  max-width: 34rem;
+  padding-block: var(--space-7);
+}
+
+.empty h2 {
+  font-size: 1.25rem;
+  letter-spacing: -0.024em;
+}
+
+.empty p {
+  margin-block-start: var(--space-3);
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.empty .actions {
+  margin-block-start: var(--space-5);
+}
+
+/* -------------------------------------------------------------------- auth */
+
+/* Sign-in is centred on the page with nothing drawn around it. */
+.auth {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-5);
+}
+
+.auth > * {
+  width: 100%;
+  max-width: 21rem;
+}
+
+/* The one page with no shell, so the form itself is the floating surface. */
+.auth form {
+  padding: var(--space-6);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+}
+
+.auth .brand {
+  display: block;
+  margin-block-end: var(--space-6);
+  font-size: 1.125rem;
+}
+
+.auth h1 {
+  font-size: 1.5rem;
+  margin-block-end: var(--space-5);
+}
+
+.auth .card {
+  margin-block-end: 0;
+}
+
+.auth .hint {
+  margin-block-start: var(--space-5);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------- utilities */
+
+.muted {
+  color: var(--muted);
+}
+
+.faint {
+  color: var(--faint);
+}
+
+.small {
+  font-size: 0.78125rem;
+}
+
+.note {
+  font-size: 0.78125rem;
+  color: var(--faint);
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.grow {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ------------------------------------------------------------------ motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------- print */
+
+@media print {
+  .appbar,
+  .sidebar,
+  .actions,
+  .icon-button {
+    display: none;
+  }
+
+  .main {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .split > .rail {
+    border-inline-start: 0;
+    padding-inline-start: 0;
+  }
+}
+
+/* ----------------------------------------------------------- account menu */
+
+.account {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.account-email {
+  flex-grow: 1;
+  min-width: 0;
+  font-size: 0.8125rem;
+  color: var(--text-2);
+  text-align: start;
+}
+
+.account-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 2rem;
+  padding-inline: 0.25rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: inherit;
+  color: var(--faint);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.account-trigger:hover {
+  background: var(--sunken);
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: var(--radius-pill);
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* The one element in the interface that is genuinely a floating panel, because
+ * it floats: it needs an edge and a shadow to separate it from the page under
+ * it. Everything else on the page does not. */
+.menu {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 40;
+  width: 15rem;
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  background: var(--raised);
+  box-shadow: var(--shadow-3);
+}
+
+/* Opens upward when its trigger sits at the bottom of the sidebar. */
+.menu.up {
+  top: auto;
+  bottom: calc(100% + 0.5rem);
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
+
+.menu-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-block-end: 1px solid var(--rule);
+}
+
+.menu-section {
+  padding: var(--space-3);
+  border-block-end: 1px solid var(--rule);
+}
+
+.menu-section:last-child {
+  border-block-end: 0;
+  padding-block-end: var(--space-2);
+}
+
+.menu-label {
+  display: block;
+  margin-block-end: var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--faint);
+}
+
+/* ---------------------------------------------------------- theme toggle */
+
+.theme-toggle {
+  display: flex;
+  gap: var(--space-1);
+  padding: 0.1875rem;
+  border-radius: var(--radius);
+  background: var(--sunken);
+}
+
+.theme-option {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--faint);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.theme-option:hover {
+  color: var(--text);
+}
+
+/* The radio itself is hidden but still focusable and still the thing that
+ * carries the state, so arrow keys move between the three options. */
+.theme-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  min-height: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+}
+
+.theme-option:has(input:checked) {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+}
+
+.theme-option:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* The line under a record's title: status, owner, dates. */
+.head-status {
+  margin-block-start: 0.5625rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* A named group of fields. Separated by a rule above it and space around it,
+ * rather than boxed in a bordered fieldset. */
+.field-group {
+  margin-block: var(--space-5);
+  padding-block-start: var(--space-5);
+  border-block-start: 1px solid var(--rule);
+}
+
+.field-group > legend {
+  font-weight: 600;
+}
+
+.field-group > .hint {
+  margin-block-end: var(--space-4);
+}
+
+/* ----------------------------------------------------------- global search */
+
+/* A popover, so it is one of the few things allowed a shadow -- and the reason
+ * `.header-search` and every container above it must not clip their overflow. */
+.search-results {
+  position: absolute;
+  inset-inline-start: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 40;
+  width: 100%;
+  min-width: 22rem;
+  max-height: 24rem;
+  overflow-y: auto;
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  background: var(--raised);
+  box-shadow: var(--shadow-3);
+}
+
+.search-empty {
+  padding: var(--space-3);
+  font-size: 0.8125rem;
+  color: var(--faint);
+}
+
+.search-hit {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-hit:hover,
+.search-hit.active {
+  background: var(--sunken);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-hit-icon {
+  display: flex;
+  flex-shrink: 0;
+  padding-block-start: 0.125rem;
+  color: var(--faint);
+}
+
+.search-hit-label {
+  display: block;
+  font-size: 0.84375rem;
+  font-weight: 500;
+}
+
+.search-hit-kind {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--faint);
+  text-transform: capitalize;
+}
+
+/* A field whose contents were refused -- the secret scanner found a private
+ * key or a token. The input itself already reddens via [aria-invalid], so this
+ * only needs to carry the label with it. */
+.field.invalid > label {
+  color: var(--crit);
+}

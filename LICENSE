@@ -1,0 +1,36 @@
+Stackkeeper is free software, licensed under the GNU Affero General Public
+License, version 3 or later (AGPL-3.0-or-later).
+
+    Stackkeeper — infrastructure, renewals and margin tracking for the
+    people who maintain other people's websites.
+    Copyright (C) 2026  Bethel Ketema
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+-------------------------------------------------------------------------------
+ACTION REQUIRED BEFORE THE FIRST PUBLIC RELEASE
+
+The full licence text is not reproduced here. A licence must be byte-for-byte
+the official text, so fetch it from the Free Software Foundation rather than
+trusting a copy that has been passed along:
+
+    curl -fsSL https://www.gnu.org/licenses/agpl-3.0.txt -o LICENSE
+
+Then re-add the copyright line above at the top, or keep this file as
+COPYING-NOTICE and let LICENSE hold the official text alone.
+
+Why the AGPL: it is the licence that keeps a hosted fork honest. Anyone may
+run, study and modify Stackkeeper, including as a service, provided that the
+people using that service can obtain its source. That protects the promise the
+product makes about what it does and does not store.
