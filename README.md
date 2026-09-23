@@ -32,10 +32,12 @@ Early, but it does the job it was built for.
 | Certificate monitoring, judged on lifetime used | Working, tested |
 | Alerts, with email, Slack, Discord and Telegram delivery | Working, tested |
 | Audit log and activity view | Working |
+| Two-factor sign-in (authenticator app) | Working, not yet tried in a browser |
+| Monthly "what to invoice" CSV export | Working, tested |
 | Provider imports, handoff packs, team roles | Not started |
 
-189 unit tests, 14 tenant-isolation assertions against a real Postgres, 9
-deliberate breaks of the isolation model that the suite catches, and 61
+210 unit tests, 14 tenant-isolation assertions against a real Postgres, 9
+deliberate breaks of the isolation model that the suite catches, and 65
 repository queries parsed against the live schema.
 
 ## Running it
