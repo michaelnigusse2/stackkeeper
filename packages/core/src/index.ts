@@ -13,3 +13,4 @@ export * from "./certificate.ts";
 export * from "./monitor-plan.ts";
 export * from "./invoice.ts";
 export * from "./renewal.ts";
+export * from "./qr.ts";

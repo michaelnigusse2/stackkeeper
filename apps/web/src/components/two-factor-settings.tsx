@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { QrCode } from "@/components/qr-code";
 
 /**
  * Turning two-factor authentication on and off.
@@ -12,8 +13,8 @@ import { authClient } from "@/lib/auth-client";
  * a code from the authenticator app is verified. That second step matters: it
  * proves the app was set up correctly before sign-in starts depending on it.
  *
- * There is no QR code yet, because that needs a dependency. The key can be
- * typed into any authenticator app, and on a phone the link opens one directly.
+ * The QR code is drawn by packages/core, with no dependency. The key is shown
+ * too, for typing into an app by hand, and on a phone the link opens one.
  */
 
 interface Setup {
@@ -129,9 +130,11 @@ export function TwoFactorSettings({ enabled }: { enabled: boolean }) {
       <form className="stack" onSubmit={confirm}>
         {notice}
         <p>
-          Add this key to your authenticator app (1Password, Bitwarden, Google Authenticator,
+          Scan this with your authenticator app (1Password, Bitwarden, Google Authenticator,
           Aegis and others all work), then enter the six-digit code it shows.
         </p>
+        {setup.uri ? <QrCode text={setup.uri} label="QR code for your authenticator app" /> : null}
+        <p className="small">Can&apos;t scan it? Type this key in instead:</p>
         <p className="mono">{groupKey(setup.key)}</p>
         {setup.uri ? (
           <p className="small">
