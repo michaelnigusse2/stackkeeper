@@ -11,3 +11,4 @@ export * from "./domain-name.ts";
 export * from "./rdap.ts";
 export * from "./certificate.ts";
 export * from "./monitor-plan.ts";
+export * from "./invoice.ts";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { leakage, RateTable, rollUpMargin, unbilledLines } from "@stackkeeper/core";
+import { leakage, monthOf, RateTable, rollUpMargin, unbilledLines } from "@stackkeeper/core";
 import {
   ensureSettings, expiringAssets, latestRates, listAssets, listClients, listCostLines,
   listMonitors, listOpenAlerts, toMarginInput,
@@ -223,6 +223,29 @@ export default async function DashboardPage() {
         </div>
 
         <aside className="rail">
+          <Section
+            title="What to invoice"
+            description="Every charge due in a month, per client, plus costs nobody is billed for. Copy it into your invoicing tool."
+          >
+            <form className="stack-tight" method="get" action="/api/export/invoice">
+              <div className="field">
+                <label htmlFor="invoice-month">Month</label>
+                <input
+                  id="invoice-month"
+                  name="month"
+                  type="month"
+                  defaultValue={monthOf(new Date())}
+                  required
+                />
+              </div>
+              <div className="actions">
+                <button type="submit" className="button">
+                  Download CSV
+                </button>
+              </div>
+            </form>
+          </Section>
+
           <Section title="Monitors" link={{ href: "/monitors", label: "Open" }}>
             <div className="line-item">
               <span className="dot ok" aria-hidden="true" />

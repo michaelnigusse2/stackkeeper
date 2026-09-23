@@ -142,3 +142,51 @@ export async function markBilled(tx: Sql, id: string, billed: boolean): Promise<
   `;
   return rows.length > 0;
 }
+
+/** A cost line with the names the invoice summary prints beside it. */
+export interface InvoiceLineRow extends CostLineRow {
+  client_name: string;
+  asset_label: string;
+  asset_provider: string | null;
+}
+
+/**
+ * Every cost line with its client and asset, for the monthly "what to
+ * invoice" export. Deleted clients and assets are left out.
+ */
+export async function listInvoiceLines(tx: Sql, orgId: string): Promise<InvoiceLineRow[]> {
+  return tx<InvoiceLineRow[]>`
+    select cl.*,
+           c.name as client_name,
+           a.label as asset_label,
+           a.provider as asset_provider
+    from app.cost_line cl
+    join app.asset a on a.org_id = cl.org_id and a.id = cl.asset_id
+    join app.client c on c.org_id = a.org_id and c.id = a.client_id
+    where cl.org_id = ${orgId}
+      and a.deleted_at is null
+      and c.deleted_at is null
+    order by c.name, a.label
+  `;
+}
+
+/** An invoice export row in the shape the summary in core expects. */
+export function toInvoiceInput(row: InvoiceLineRow) {
+  return {
+    lineId: row.id,
+    clientName: row.client_name,
+    assetLabel: row.asset_label,
+    provider: row.asset_provider,
+    costAmount: toMinorUnits(row.cost_amount) as number,
+    costCurrency: row.cost_currency,
+    costCycle: row.cost_cycle,
+    chargeAmount: toMinorUnits(row.charge_amount),
+    chargeCurrency: row.charge_currency,
+    chargeCycle: row.charge_cycle,
+    billed: row.billed,
+    nextRenewal: toIsoDate(row.next_renewal),
+    startedOn: toIsoDate(row.started_on),
+    endedOn: toIsoDate(row.ended_on),
+    note: row.note,
+  };
+}
