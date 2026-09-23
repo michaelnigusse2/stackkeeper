@@ -15,17 +15,17 @@ This file is the honest split. Read it before trusting anything below.
 | Migrations | Applied to a live Postgres 16 from empty | 4 of 4 apply cleanly |
 | Tenant isolation | `scripts/test-rls.sh` against a real database, as the unprivileged role | 14 assertions pass |
 | The isolation tests are not vacuous | `scripts/test-rls-mutations.sh` breaks the model 9 ways | All 9 breaks caught |
-| Every repository query | `scripts/check-queries.sh` runs `PREPARE` against the real schema | 65 of 65 parse and plan |
+| Every repository query | `scripts/check-queries.sh` runs `PREPARE` against the real schema | 69 of 69 parse and plan |
 | That query check is not vacuous | A column name was misspelled on purpose | Caught |
-| `packages/core` | `node --test` | 144 tests pass |
+| `packages/core` | `node --test` | 152 tests pass |
 | `packages/db` encryption | `node --test` | 15 tests pass |
-| `apps/worker` logic | `node --test` | 51 tests pass |
+| `apps/worker` logic | `node --test` | 54 tests pass |
 | `packages/core` types | `tsc --noEmit` | Clean |
 | Every package's types, including `apps/web` | `tsc --noEmit` against the installed packages, 23 Sep 2026 | Clean |
 | Cross-package imports | `scripts/check-imports.py` | 181 symbols, all exported |
 | Erasable syntax | Every `.ts` loaded through Node's type stripper | All strippable |
 
-What the 210 unit tests actually cover, beyond arithmetic: RDAP and WHOIS
+What the 221 unit tests actually cover, beyond arithmetic: RDAP and WHOIS
 parsing against real response shapes, registrable-domain resolution including
 multi-level suffixes and punycode, wildcard certificate matching, the
 lifetime-based alert thresholds, the registry auto-renew trap, the private

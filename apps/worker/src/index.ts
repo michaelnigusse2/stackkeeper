@@ -18,8 +18,9 @@
 import PgBoss from "pg-boss";
 import {
   alertContext, alertsAwaitingDelivery, channelsForOrganization, claimDueMonitors,
-  createSql, markAlertNotified, openAlert, previousCheck, recordCheck,
-  resolveClearedAlerts, secretBox, updateMonitorAfterCheck, upsertRate,
+  createSql, markAlertNotified, openAlert, openRenewalAlert, previousCheck, recordCheck,
+  resolveClearedAlerts, resolveStaleRenewalAlerts, secretBox, updateMonitorAfterCheck,
+  upcomingAssetRenewals, upcomingCostLineRenewals, upsertRate,
   type MonitorRow, type Sql,
 } from "@stackkeeper/db";
 import { checkDomain, loadBootstrap } from "./checkers/domain.ts";
@@ -28,6 +29,7 @@ import { JOBS, type CheckJob } from "./jobs.ts";
 import { deliver, formatAlert } from "./notify.ts";
 import { buildDomainOutcome, buildTlsOutcome } from "./pipeline.ts";
 import { HostRateLimiter, jitter } from "./rate-limiter.ts";
+import { renewalAlerts } from "./renewals.ts";
 
 const databaseUrl = process.env.DATABASE_ADMIN_URL ?? process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -202,6 +204,39 @@ async function registerHandlers(boss: PgBoss, sql: Sql): Promise<void> {
     }
   });
 
+  /**
+   * Renewal reminders for dates only the user knows: a cost line's next
+   * payment, or the renewal date of a licence or hosting plan nothing
+   * monitors. Opens what is newly due and closes what no longer applies.
+   */
+  await boss.work(JOBS.sweepRenewals, async () => {
+    const [lines, assets] = await Promise.all([
+      upcomingCostLineRenewals(sql),
+      upcomingAssetRenewals(sql),
+    ]);
+    const alerts = renewalAlerts(lines, assets);
+
+    let opened = 0;
+    for (const alert of alerts) {
+      const created = await openRenewalAlert(sql, {
+        orgId: alert.orgId,
+        assetId: alert.assetId,
+        severity: alert.severity,
+        rule: alert.rule,
+        dedupeKey: alert.dedupeKey,
+        message: alert.message,
+        dueOn: alert.dueOn,
+        source: alert.source,
+        sourceId: alert.sourceId,
+      });
+      if (created) opened++;
+    }
+    const closed = await resolveStaleRenewalAlerts(sql, alerts.map((a) => a.dedupeKey));
+    if (opened > 0 || closed > 0) {
+      console.log(`[worker] renewals: opened ${opened}, closed ${closed}`);
+    }
+  });
+
   await boss.work(JOBS.purgeDeleted, async () => {
     const purged = await sql<Array<{ n: number }>>`
       with gone as (
@@ -273,6 +308,10 @@ async function scheduleRecurring(boss: PgBoss): Promise<void> {
   await boss.schedule(JOBS.deliverAlert, "*/2 * * * *");
   await boss.schedule(JOBS.refreshRates, "15 4 * * *");
   await boss.schedule(JOBS.purgeDeleted, "30 3 * * *");
+  // Hourly, so a date entered today is reminded about today, plus once on
+  // start so a fresh deployment does not wait for the hour.
+  await boss.schedule(JOBS.sweepRenewals, "7 * * * *");
+  await boss.send(JOBS.sweepRenewals, {});
 }
 
 export { limiter };

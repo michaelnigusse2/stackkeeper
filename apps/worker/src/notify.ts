@@ -48,7 +48,9 @@ export function formatAlert(alert: AlertEventRow, context: AlertContext): Format
     );
   }
 
-  lines.push("", `Asset: ${what}${who}`, `Checked: ${context.target}`);
+  lines.push("", `Asset: ${what}${who}`);
+  // Renewal reminders come from a date the user entered, not from a check.
+  if (context.target) lines.push(`Checked: ${context.target}`);
 
   return {
     subject: `${lead}: ${what}${who}`,

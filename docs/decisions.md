@@ -160,3 +160,17 @@ Auth documentation, add it as a dependency, and restore the plugin in
 `apps/web/src/lib/auth.ts`, the client plugin in `auth-client.ts`, and the
 button on the sign-in page. `PASSKEY_RP_ID` is already reserved in
 `.env.example`.
+
+## Renewal reminders alert once per stage
+
+Dates only the user knows, a cost line's next renewal or the expiry of a
+licence or hosting plan that no monitor watches, raise reminders at 30, 14
+and 3 days, and once more if the date passes without being moved on. Assets
+with an enabled monitor are skipped, because the monitor already alerts from
+the registry's own data.
+
+The dedupe key carries the date and the stage. A reminder that someone
+acknowledges therefore stays acknowledged until the next stage, instead of
+reopening on the next hourly sweep, and moving the date forward retires the
+old reminders without anyone clicking. Dates more than 60 days overdue are
+left alone, so a first run against old data does not produce a wall of alerts.

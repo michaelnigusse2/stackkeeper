@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GlobeIcon, ServerIcon, ShieldIcon, WarningIcon } from "@/components/icons";
+import { ClockIcon, GlobeIcon, ServerIcon, ShieldIcon, WarningIcon } from "@/components/icons";
 import type { Tone } from "@/components/status-dot";
 
 /**
@@ -50,6 +50,7 @@ export function WorklistItem({
 
 function IconForRule({ rule }: { rule?: string }) {
   const name = rule ?? "";
+  if (name.startsWith("renewal")) return <ClockIcon />;
   if (name.includes("tls") || name.includes("cert")) return <ShieldIcon />;
   if (name.includes("domain")) return <GlobeIcon />;
   if (name.includes("server") || name.includes("host")) return <ServerIcon />;

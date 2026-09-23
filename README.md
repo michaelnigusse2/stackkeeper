@@ -31,13 +31,14 @@ Early, but it does the job it was built for.
 | Domain monitoring: RDAP, WHOIS fallback, manual dates | Working, tested |
 | Certificate monitoring, judged on lifetime used | Working, tested |
 | Alerts, with email, Slack, Discord and Telegram delivery | Working, tested |
+| Renewal reminders at 30, 14 and 3 days from dates you enter | Working, tested |
 | Audit log and activity view | Working |
 | Two-factor sign-in (authenticator app) | Working, not yet tried in a browser |
 | Monthly "what to invoice" CSV export | Working, tested |
 | Provider imports, handoff packs, team roles | Not started |
 
-210 unit tests, 14 tenant-isolation assertions against a real Postgres, 9
-deliberate breaks of the isolation model that the suite catches, and 65
+221 unit tests, 14 tenant-isolation assertions against a real Postgres, 9
+deliberate breaks of the isolation model that the suite catches, and 69
 repository queries parsed against the live schema.
 
 ## Running it

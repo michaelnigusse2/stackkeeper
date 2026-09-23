@@ -23,7 +23,7 @@ export default async function AlertsPage() {
     <>
       <PageHead
         title="Alerts"
-        description="Anything the monitors found that needs a person. Alerts close themselves when the problem goes away."
+        description="Anything the monitors found, and renewals coming up on the dates you entered. Alerts close themselves when the problem goes away."
       />
 
       {open.length === 0 ? (

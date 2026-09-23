@@ -20,6 +20,8 @@ export const JOBS = {
   deliverAlert: "alerts.deliver",
   /** Refresh exchange rates so margins stay correct. */
   refreshRates: "fx.refresh",
+  /** Raise reminders for renewal dates the user entered by hand. */
+  sweepRenewals: "renewals.sweep",
   /** Erase soft-deleted records past their retention window. */
   purgeDeleted: "maintenance.purge",
 } as const;

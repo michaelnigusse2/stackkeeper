@@ -223,10 +223,11 @@ export async function alertContext(
   const rows = await ownerTx<
     Array<{ asset_label: string | null; client_name: string | null; target: string }>
   >`
-    select a.label as asset_label, c.name as client_name, m.target
+    select a.label as asset_label, c.name as client_name, coalesce(m.target, '') as target
     from app.alert_event e
-    join app.monitor m on m.id = e.monitor_id
-    left join app.asset a on a.id = m.asset_id
+    -- Renewal reminders have an asset but no monitor, so both joins are outer.
+    left join app.monitor m on m.id = e.monitor_id
+    left join app.asset a on a.id = coalesce(e.asset_id, m.asset_id)
     left join app.client c on c.id = a.client_id
     where e.id = ${alertId}
   `;
