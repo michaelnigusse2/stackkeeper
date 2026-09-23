@@ -13,8 +13,9 @@ for them.** Where a credential exists, it records a reference to the entry in
 your own password manager. That is checked in the browser as you type, again on
 the server, and once more by a database constraint.
 
-Licensed under the [AGPL-3.0-or-later](LICENSE). Run it yourself, change it,
-or use the hosted version when there is one.
+Stackkeeper is open-core. The code is licensed under the
+[AGPL-3.0-or-later](LICENSE): run it yourself, change it, or use the paid
+hosted version once it exists. See [docs/decisions.md](docs/decisions.md).
 
 ## Status
 

@@ -3,6 +3,47 @@
 Short notes on choices that are not obvious from the code, and would otherwise
 be re-litigated every few months.
 
+## Open-core: AGPL code, paid hosting later
+
+Decided in September 2026, after the implementation plan put the question
+"SaaS or open source?" and answered it with both.
+
+Everything in this repository is AGPL-3.0-or-later and runs on anyone's own
+server with the same `docker-compose.yml` used for development. The business
+is a paid, hosted Stackkeeper added on top: the same code, run for people who
+would rather not operate a server, with managed alert delivery, backups and
+checks from more than one region.
+
+Why:
+
+- **The trust claim becomes literal.** The product holds a map of other
+  people's infrastructure. Anyone can read the code that stores it, or keep it
+  on their own machine.
+- **Distribution.** GitHub and self-hosting communities reach freelancers and
+  small agencies more cheaply than advertising. Every direct competitor found in
+  the research is closed.
+- **The work survives.** If the hosted plan does not sell, the project is still
+  a useful tool and not wasted effort.
+
+What follows from it:
+
+- **Self-hosting is first-class.** No feature may depend on the hosted service.
+  Monitoring and alerts are never gated by a plan.
+- **Order of work.** The public repository and self-host guide come before
+  billing. Payments and plan limits are built when the hosted service launches,
+  not before.
+- **Before the first public push:** the full AGPL text in `LICENSE`, a real
+  address in `SECURITY.md` and `/.well-known/security.txt`, and a public
+  roadmap.
+- **Validation still matters, for a different question.** Interviews and the
+  landing page no longer decide whether to build. They decide whether the
+  hosted plan will sell, at what price, and which providers to import from
+  first.
+
+Still open: whether team features stay AGPL or sit under a separate commercial
+licence. Decide before the first public push, because relicensing code later
+needs every contributor's agreement.
+
 ## Plain SQL migrations rather than an ORM's schema DSL
 
 The security of this product rests on row-level security, forced policies,
