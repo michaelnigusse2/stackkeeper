@@ -126,7 +126,7 @@ async function main(): Promise<void> {
 
   const file = "live-check-results.json";
   writeFileSync(file, `${JSON.stringify({ ranAt: new Date().toISOString(), node: process.version, rows }, null, 2)}\n`);
-  console.log(`Saved ${file}. Send it over if anything looks wrong.`);
+  console.log(`Saved ${file}.`);
 }
 
 main().catch((error) => {

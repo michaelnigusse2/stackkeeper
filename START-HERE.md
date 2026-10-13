@@ -25,13 +25,14 @@ one.
 ## 2. Install the project
 
 ```
-cd C:\Users\micha\Desktop\DevJournal\stackkeeper
+git clone https://github.com/michaelnigusse2/stackkeeper.git
+cd stackkeeper
 pnpm install
 ```
 
-**This is the step most likely to fail.** The package versions were chosen
-without access to the npm registry, so one may not exist. If it errors, copy
-the whole message and send it over; it is usually a one-line fix.
+**This is the step most likely to fail.** If a package version cannot be
+resolved, `pnpm install --no-frozen-lockfile` will pick the nearest match and
+update the lockfile. If pnpm itself is missing, `corepack enable` installs it.
 
 ## 3. Set up your environment file
 
@@ -118,7 +119,7 @@ These are the ones that prove one workspace cannot see another's data.
 
 ## If something breaks
 
-Send me the exact error text. Useful things to include:
+Open an issue with the exact error text. Useful things to include:
 
 - which step number you were on
 - the full error, not a summary
@@ -126,11 +127,3 @@ Send me the exact error text. Useful things to include:
 
 Most first-run problems are a missing package version or a typo in `.env`.
 Neither takes long to fix.
-
-## One job before the repository goes public
-
-Replace the placeholder `LICENSE` with the official AGPL text:
-
-```
-curl -fsSL https://www.gnu.org/licenses/agpl-3.0.txt -o LICENSE
-```
