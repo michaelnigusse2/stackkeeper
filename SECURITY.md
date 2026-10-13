@@ -2,17 +2,13 @@
 
 ## Reporting a vulnerability
 
-Email **security@stackkeeper.example** with what you found and how to reproduce
+Email **michaelnigusse2@gmail.com** with what you found and how to reproduce
 it. Please do not open a public issue.
 
 You will get a reply within three working days. Stackkeeper is maintained
 part-time, so a fix may take longer than that, but you will be told where it
 stands. You are welcome to be credited in the release notes, or not, as you
 prefer.
-
-> Replace the address above with a real one before publishing this repository,
-> and serve the same address from `/.well-known/security.txt` as RFC 9116
-> describes.
 
 ## What Stackkeeper stores, and what it does not
 
